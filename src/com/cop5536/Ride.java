@@ -5,6 +5,11 @@ public class Ride {
 	long rideNumber;
 	int rideCost;
 	int tripDuration;
+	@Override
+	public String toString() {
+		return "Ride [rideNumber=" + rideNumber + "]";
+	}
+
 	int pos;
 
 	public Ride(long rideNumber, int rideCost, int tripDuration) {
