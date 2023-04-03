@@ -37,11 +37,14 @@ public class MinHeap {
 			throw new Exception("Cannot remove min, Heap is empty");
 		}
 		Ride root = getRoot();
-		if(minHeap.size() == 1 ) {
+		if (minHeap.size() == 1) {
+			minHeap.clear();
 			return root;
 		}
 		// replace root with right most child of the minHeao
 		minHeap.set(0, minHeap.remove(minHeap.size() - 1));
+		// correct position of the element
+		minHeap.get(0).pos = 0;
 		fixHeap(0);
 		return root;
 	}
@@ -76,7 +79,43 @@ public class MinHeap {
 		}
 	}
 
-	public void deleteRideByRideNumber(int rideNumber) {
+	/*
+	 * FIXME
+	 *
+	 * CancelRide(rideNumber) deletes the triplet (rideNumber, rideCost,
+	 * tripDuration) from the data structures, can be ignored if an entry for
+	 * rideNumber doesn’t exist.
+	 */
+	public void deleteRideByRideNumber(int pos) throws Exception {
+		if (pos == 0) {
+			extractMin();
+			return;
+		}
+		if (pos >= minHeap.size() || pos < 0 || minHeap.isEmpty()) {
+			throw new Exception("element at given index does not exist " + pos + " heap size = " + minHeap.size());
+		}
+		// move the delete operation down the heap
+		minHeap.set(pos, minHeap.remove(minHeap.size() - 1));
+		minHeap.get(pos).pos = pos;
+		fixHeap(0);
+	}
+
+	/*
+	 * FIXME
+	 *
+	 * a) if the new_tripDuration <= existing tripDuration, there would be no action
+	 * needed.
+	 *
+	 * b) if the existing_tripDuration < new_tripDuration <= 2*(existing
+	 * tripDuration), the driver will cancel the existing ride and a new ride
+	 * request would be created with a penalty of 10 on existing rideCost . We
+	 * update the entry in the data structure with (rideNumber, rideCost+10,
+	 * new_tripDuration)
+	 *
+	 * c) if the new_tripDuration > 2*(existing tripDuration), the ride would be
+	 * automatically declined and the ride would be removed from the data structure.
+	 */
+	public void updateRideByRideNumber(int rideNumber) {
 
 	}
 
@@ -109,33 +148,48 @@ public class MinHeap {
 	}
 
 	public void printHeap() {
+	    int level = 0;
+	    int nodesInLevel = 1;
 	    for (int i = 0; i < minHeap.size(); i++) {
-	        System.out.printf("(%d, %d, %d) ", minHeap.get(i).rideNumber, minHeap.get(i).rideCost, minHeap.get(i).tripDuration);
+	        if (i == nodesInLevel - 1) {
+//	            System.out.println();
+	            level++;
+	            nodesInLevel += (1 << level);
+	        }
+	        System.out.println("index = "+ i + " rideCost = " + minHeap.get(i).rideCost);
 	    }
 	    System.out.println();
 	}
 
-//	public static void main(String[] args) throws Exception {
-//		MinHeap minHeap = new MinHeap();
-//		minHeap.insert(new Ride(1, 10, 30));
-//		minHeap.insert(new Ride(2, 20, 20));
-//		minHeap.insert(new Ride(3, 10, 20));
-//		minHeap.insert(new Ride(4, 15, 25));
-//		minHeap.insert(new Ride(5, 5, 40));
-//
-////		minHeap.printHeap();
-//
-//		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 5
-////		minHeap.printHeap();
-//		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 1
-////		minHeap.printHeap();
-//		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 3
-////		minHeap.printHeap();
-//		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 2
-////		minHeap.printHeap();
-//		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 4
-////		minHeap.printHeap();
-//
-//
+//	public void printHeap() {
+//		for (int i = 0; i < minHeap.size(); i++) {
+//			System.out.printf("(%d, %d, %d) ", minHeap.get(i).rideNumber, minHeap.get(i).rideCost,
+//					minHeap.get(i).tripDuration);
+//		}
+//		System.out.println();
 //	}
+
+	public static void main(String[] args) throws Exception {
+		MinHeap minHeap = new MinHeap();
+		minHeap.insert(new Ride(1, 10, 30));
+		minHeap.insert(new Ride(2, 20, 20));
+		minHeap.insert(new Ride(3, 10, 20));
+		minHeap.insert(new Ride(4, 15, 25));
+		minHeap.insert(new Ride(5, 5, 40));
+
+		minHeap.printHeap();
+
+		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 5
+		minHeap.printHeap();
+		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 1
+		minHeap.printHeap();
+		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 3
+		minHeap.printHeap();
+		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 2
+		minHeap.printHeap();
+		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 4
+		minHeap.printHeap();
+
+
+	}
 }
