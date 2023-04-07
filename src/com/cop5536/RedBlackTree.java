@@ -258,4 +258,77 @@ public class RedBlackTree {
 		gp.parent = p;
 	}
 
+	public void delete(int rideNumber) {
+		// first find the node with this rideNumber
+		Node nodeWithData = null;
+		Node current = this.root;
+		while (current != null) {
+			if (current.ride.rideNumber == rideNumber) {
+				nodeWithData = current;
+			}
+			if (rideNumber < current.ride.rideNumber) {
+				current = current.leftChild;
+			} else {
+				current = current.rightChild;
+			}
+		}
+
+		if (nodeWithData == null) {
+			System.out.println("node with given rideNumber not found " + rideNumber);
+			return;
+		}
+
+		// check if we need to perform fixes
+		/*
+		 * if neither child is null, the node is of degree 2. we need to replace it with
+		 * the minimum of the right subtree
+		 */
+		boolean fix = nodeWithData.color == Color.BLACK;
+		Node rootOfDeficientSubtree = null;
+		if (nodeWithData.leftChild != null && nodeWithData.rightChild != null) {
+			rootOfDeficientSubtree = min(nodeWithData.rightChild);
+			// update flag according to the color of the node being deleted
+			fix = rootOfDeficientSubtree.color == Color.BLACK;
+		}
+		/*
+		 * degree 1 checks for the node with the data we need to delete if either left
+		 * or right child is null, the node is a degree 1 node the other non-null child
+		 * will be the root of the deficient subtree
+		 */
+		else if (nodeWithData.leftChild == null) {
+			rootOfDeficientSubtree = nodeWithData.rightChild;
+			swap(nodeWithData, nodeWithData.rightChild);
+		} else {
+			rootOfDeficientSubtree = nodeWithData.leftChild;
+			swap(nodeWithData, nodeWithData.leftChild);
+		}
+
+		if (fix) {
+			fixDelete(rootOfDeficientSubtree);
+		}
+	}
+
+	private void swap(Node parent, Node child) {
+		if (parent.parent == null) {
+			this.root = child;
+		} else if (parent == parent.parent.leftChild) {
+			parent.parent.leftChild = child;
+			child.parent = parent.parent;
+		} else {
+			parent.parent.rightChild = child;
+			child.parent = parent.parent;
+		}
+	}
+
+	private void fixDelete(Node node) {
+
+	}
+
+	private Node min(Node node) {
+		while (node.leftChild != null) {
+			node = node.leftChild;
+		}
+		return node;
+	}
+
 }
