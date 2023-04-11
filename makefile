@@ -7,7 +7,7 @@ SRCFILES = $(shell find $(SRCDIR) -name '*.java')
 SRCDIR = src
 BINDIR = bin
 LIBDIR = lib
-JARFILE = myproject.jar
+JARFILE = GatorTaxi.jar
 MANIFEST = manifest.txt
 
 # Find all the .java files in the source directory
