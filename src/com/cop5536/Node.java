@@ -7,7 +7,6 @@ public class Node {
 	Node parent;
 	Node leftChild;
 	Node rightChild;
-	static Node externNode;
 
 	public Node(int key) {
 		super();
@@ -31,7 +30,7 @@ public class Node {
 		RED, BLACK;
 	}
 
-	static Color getColor(Node node) {
+	static Color nodesColor(Node node) {
 		return node != null ? node.color : Color.BLACK;
 	}
 
@@ -41,15 +40,15 @@ public class Node {
 		}
 	}
 
-	static Node leftChild(Node node) {
+	static Node leftChildOfNode(Node node) {
 		return node != null ? node.leftChild : null;
 	}
 
-	static Node rightChild(Node node) {
+	static Node rightChildOfNode(Node node) {
 		return node != null ? node.rightChild : null;
 	}
 
-	static Node parent(Node node) {
+	static Node parentOfNode(Node node) {
 		return node != null ? node.parent : null;
 	}
 }

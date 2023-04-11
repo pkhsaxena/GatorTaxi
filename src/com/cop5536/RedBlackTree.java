@@ -1,9 +1,9 @@
 package com.cop5536;
 
-import static com.cop5536.Node.getColor;
-import static com.cop5536.Node.leftChild;
-import static com.cop5536.Node.parent;
-import static com.cop5536.Node.rightChild;
+import static com.cop5536.Node.nodesColor;
+import static com.cop5536.Node.leftChildOfNode;
+import static com.cop5536.Node.parentOfNode;
+import static com.cop5536.Node.rightChildOfNode;
 import static com.cop5536.Node.setColor;
 
 import java.util.ArrayList;
@@ -341,7 +341,7 @@ public class RedBlackTree {
 		 */
 		boolean needFix = nodeToDelete.color == Color.BLACK;
 		Node rootOfDeficientSubtree = null;
-		if (rightChild(nodeToDelete) != null) {
+		if (rightChildOfNode(nodeToDelete) != null) {
 //			System.out.println("swap 1");
 			rootOfDeficientSubtree = nodeToDelete.rightChild;
 			swap(nodeToDelete, rootOfDeficientSubtree);
@@ -349,7 +349,7 @@ public class RedBlackTree {
 			nodeToDelete.leftChild = null;
 			nodeToDelete.rightChild = null;
 			nodeToDelete.parent = null;
-		} else if (leftChild(nodeToDelete) != null) {
+		} else if (leftChildOfNode(nodeToDelete) != null) {
 //			System.out.println("swap 2");
 			rootOfDeficientSubtree = nodeToDelete.leftChild;
 			swap(nodeToDelete, rootOfDeficientSubtree);
@@ -367,10 +367,10 @@ public class RedBlackTree {
 		} else {
 			// if fixing has already been done
 			// remove connection to and from the node being deleted
-			if (parent(nodeToDelete) != null) {
-				if (nodeToDelete == rightChild(parent(nodeToDelete))) {
+			if (parentOfNode(nodeToDelete) != null) {
+				if (nodeToDelete == rightChildOfNode(parentOfNode(nodeToDelete))) {
 					nodeToDelete.parent.rightChild = null;
-				} else if (nodeToDelete == leftChild(parent(nodeToDelete))) {
+				} else if (nodeToDelete == leftChildOfNode(parentOfNode(nodeToDelete))) {
 					nodeToDelete.parent.leftChild = null;
 				}
 				nodeToDelete.parent = null;
@@ -382,71 +382,71 @@ public class RedBlackTree {
 	private void fixDelete(Node node) {
 //		System.out.println("fixing");
 		int i = 0;
-		while (node != root && getColor(node) == Color.BLACK) {
+		while (node != root && nodesColor(node) == Color.BLACK) {
 			debug("iter = " + i++);
-			if (node == leftChild(parent(node))) {
-				Node sibling = rightChild(parent(node));
+			if (node == leftChildOfNode(parentOfNode(node))) {
+				Node sibling = rightChildOfNode(parentOfNode(node));
 				// case 1
-				if (getColor(sibling) == Color.RED) {
+				if (nodesColor(sibling) == Color.RED) {
 					setColor(sibling, Color.BLACK);
-					setColor(parent(node), Color.RED);
-					RR(parent(node));
+					setColor(parentOfNode(node), Color.RED);
+					RR(parentOfNode(node));
 					// update sibling of the node
-					sibling = rightChild(parent(node));
+					sibling = rightChildOfNode(parentOfNode(node));
 				}
 
 				// sibling is black
 				// case 2
-				if (getColor(leftChild(sibling)) == Color.BLACK && getColor(rightChild(sibling)) == Color.BLACK) {
+				if (nodesColor(leftChildOfNode(sibling)) == Color.BLACK && nodesColor(rightChildOfNode(sibling)) == Color.BLACK) {
 					setColor(sibling, Color.RED);
-					node = parent(node);
+					node = parentOfNode(node);
 				} else {
 					// case 3
-					if (getColor(rightChild(sibling)) == Color.BLACK) {
-						setColor(leftChild(sibling), Color.BLACK);
+					if (nodesColor(rightChildOfNode(sibling)) == Color.BLACK) {
+						setColor(leftChildOfNode(sibling), Color.BLACK);
 						setColor(sibling, Color.RED);
 						LL(sibling);
-						sibling = rightChild(parent(node));
+						sibling = rightChildOfNode(parentOfNode(node));
 					}
 					// case 3 is always followed by case 4, no need for else condition
 					// case 4
-					setColor(sibling, getColor(parent(node)));
-					setColor(rightChild(sibling), Color.BLACK);
-					setColor(parent(node), Color.BLACK);
-					RR(parent(node));
+					setColor(sibling, nodesColor(parentOfNode(node)));
+					setColor(rightChildOfNode(sibling), Color.BLACK);
+					setColor(parentOfNode(node), Color.BLACK);
+					RR(parentOfNode(node));
 					// once case 4 is executed, we always have a red-black tree
 					node = root;
 				}
 			} else { // similar to if condition
-				Node sibling = leftChild(parent(node));
+				Node sibling = leftChildOfNode(parentOfNode(node));
 				// case 1
-				if (getColor(sibling) == Color.RED) {
+				if (nodesColor(sibling) == Color.RED) {
 					setColor(sibling, Color.BLACK);
-					setColor(parent(node), Color.RED);
-					LL(parent(node));
+					setColor(parentOfNode(node), Color.RED);
+					LL(parentOfNode(node));
 					// update sibling of the node
-					sibling = leftChild(parent(node));
+					sibling = leftChildOfNode(parentOfNode(node));
 				}
 
 				// sibling is black
 				// case 2
-				if (getColor(leftChild(sibling)) == Color.BLACK && getColor(rightChild(sibling)) == Color.BLACK) {
+				if (nodesColor(leftChildOfNode(sibling)) == Color.BLACK && nodesColor(rightChildOfNode(sibling)) == Color.BLACK) {
 					setColor(sibling, Color.RED);
-					node = parent(node);
+					node = parentOfNode(node);
 				} else {
 					// case 3
-					if (getColor(leftChild(sibling)) == Color.BLACK) {
-						setColor(rightChild(sibling), Color.BLACK);
+					if (nodesColor(leftChildOfNode(sibling)) == Color.BLACK) {
+						setColor(rightChildOfNode(sibling), Color.BLACK);
 						setColor(sibling, Color.RED);
 						RR(sibling);
-						sibling = leftChild(parent(node));
+						sibling = leftChildOfNode(parentOfNode(node));
 					}
 					// case 3 is always followed by case 4, no need for else condition
 					// case 4
-					setColor(sibling, getColor(parent(node)));
-					setColor(parent(node), Color.BLACK);
-					setColor(leftChild(sibling), Color.BLACK);
-					LL(parent(node));
+					setColor(sibling, nodesColor(parentOfNode(node)));
+					setColor(parentOfNode(node), Color.BLACK);
+					setColor(leftChildOfNode(sibling), Color.BLACK);
+					LL(parentOfNode(node));
 					// once case 4 is executed, we always have a red-black tree
 					node = root;
 				}
@@ -522,4 +522,5 @@ public class RedBlackTree {
 //			System.out.println(msg);
 		}
 	}
+
 }
