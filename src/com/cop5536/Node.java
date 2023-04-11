@@ -2,14 +2,14 @@ package com.cop5536;
 
 public class Node {
 	Ride ride;
-	long key;
+	int key;
 	Color color;
 	Node parent;
 	Node leftChild;
 	Node rightChild;
 	static Node externNode;
 
-	public Node(long key) {
+	public Node(int key) {
 		super();
 		this.key = key;
 		this.color = Color.RED;

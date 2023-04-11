@@ -6,7 +6,9 @@ import static com.cop5536.Node.parent;
 import static com.cop5536.Node.rightChild;
 import static com.cop5536.Node.setColor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.cop5536.Node.Color;
 
@@ -51,18 +53,18 @@ public class RedBlackTree {
 		}
 	}
 
-	public void insert(Ride ride) throws Exception {
+	public boolean insert(Ride ride) throws Exception {
 		Node node = new Node(ride);
 		// check if tree is empty
 		if (root == null) {
 			root = node;
 			root.color = Color.BLACK;
-			return;
+			return true;
 		}
 		if (root != null && root.key == node.key || (root.leftChild != null && root.leftChild.key == node.key)
 				|| (root.rightChild != null && root.rightChild.key == node.key)) {
 			// duplicate ride number, as per specification this is an error
-			throw new Exception("duplicate ride number " + node.key);
+			return false;
 		}
 		// if tree is not empty check where to insert to the new node
 		// trivial case - only root is present in the tree
@@ -74,7 +76,7 @@ public class RedBlackTree {
 			node.parent = root;
 		}
 		if (node.parent == root) {
-			return;
+			return true;
 		}
 		// trivial cases checked
 		// node will be inserted somewhere in the left or right subtrees
@@ -103,16 +105,16 @@ public class RedBlackTree {
 		// since this node is not root node, may need to check double red condition
 		if (node.parent.parent == null) {
 			// this is a level 2 node, no need to check
-			return;
+			return true;
 		}
-		checkAndFixInsert(node);
+		return checkAndFixInsert(node);
 	}
 
 	// travel back up using the parent pointers till root to check double red
 	// condition
-	private void checkAndFixInsert(Node node) {
+	private boolean checkAndFixInsert(Node node) {
 		if (node.parent.color == Color.BLACK) {
-			return;
+			return true;
 		}
 
 		while (node != null && node.parent != null && node.parent.color == Color.RED) {
@@ -168,6 +170,7 @@ public class RedBlackTree {
 			// keep the root node as black
 			root.color = Color.BLACK;
 		}
+		return true;
 	}
 
 	private void LR(Node gp) {
@@ -234,12 +237,14 @@ public class RedBlackTree {
 		if (gp != null) {
 			debug("LL");
 			Node p = gp.leftChild;
-			gp.leftChild = p.rightChild;
-			if (p.rightChild != null) {
-				p.rightChild.parent = gp;
+			if (p != null) {
+				gp.leftChild = p.rightChild;
+				if (p.rightChild != null) {
+					p.rightChild.parent = gp;
+				}
+				p.rightChild = gp;
+				p.parent = gp.parent;
 			}
-			p.rightChild = gp;
-			p.parent = gp.parent;
 			if (gp.parent == null) {
 				this.root = p;
 			} else if (gp == gp.parent.leftChild) {
@@ -256,12 +261,14 @@ public class RedBlackTree {
 		if (gp != null) {
 			debug("RR");
 			Node p = gp.rightChild;
-			gp.rightChild = p.leftChild;
-			if (p.leftChild != null) {
-				p.leftChild.parent = gp;
+			if (p != null) {
+				gp.rightChild = p.leftChild;
+				if (p.leftChild != null) {
+					p.leftChild.parent = gp;
+				}
+				p.leftChild = gp;
+				p.parent = gp.parent;
 			}
-			p.leftChild = gp;
-			p.parent = gp.parent;
 			if (gp.parent == null) {
 				this.root = p;
 			} else if (gp == gp.parent.leftChild) {
@@ -273,7 +280,8 @@ public class RedBlackTree {
 		}
 	}
 
-	public void delete(int rideNumber) {
+	public int delete(int rideNumber) {
+		int posInMinHeap;
 		// first find the node with this rideNumber
 		Node nodeToDelete = null;
 		Node current = this.root;
@@ -289,10 +297,13 @@ public class RedBlackTree {
 		}
 
 		if (nodeToDelete == null) {
-			System.out.println("node with given rideNumber not found " + rideNumber);
-			return;
+//			System.out.println("node with given rideNumber not found " + rideNumber);
+			return Integer.MIN_VALUE;
 		}
-
+		if (nodeToDelete == root && nodeToDelete.leftChild == null && nodeToDelete.rightChild == null) {
+			this.root = null;
+		}
+		posInMinHeap = nodeToDelete.ride.pos;
 		// check if we need to perform fixes
 		/*
 		 * if neither child is null, the node is of degree 2. we need to replace it with
@@ -300,7 +311,7 @@ public class RedBlackTree {
 		 */
 
 		if (nodeToDelete.leftChild != null && nodeToDelete.rightChild != null) {
-			Node minNode = min(nodeToDelete.rightChild);
+			Node minNode = max(nodeToDelete.leftChild);
 			// update flag according to the color of the node being deleted
 //			// since the minNode cannot have a left child
 //			// the root of deficient subtree must be the right child
@@ -322,7 +333,7 @@ public class RedBlackTree {
 			nodeToDelete.key = minNode.key;
 			nodeToDelete.ride = minNode.ride;
 			nodeToDelete = minNode;
-			System.out.println("swap 3");
+//			System.out.println("swap 3");
 		}
 		/*
 		 * degree 1 checks for the node with the data we need to delete if either left
@@ -332,7 +343,7 @@ public class RedBlackTree {
 		boolean needFix = nodeToDelete.color == Color.BLACK;
 		Node rootOfDeficientSubtree = null;
 		if (rightChild(nodeToDelete) != null) {
-			System.out.println("swap 1");
+//			System.out.println("swap 1");
 			rootOfDeficientSubtree = nodeToDelete.rightChild;
 			swap(nodeToDelete, rootOfDeficientSubtree);
 			// remove connections from node to delete so they don't affect rotations
@@ -340,7 +351,7 @@ public class RedBlackTree {
 			nodeToDelete.rightChild = null;
 			nodeToDelete.parent = null;
 		} else if (leftChild(nodeToDelete) != null) {
-			System.out.println("swap 2");
+//			System.out.println("swap 2");
 			rootOfDeficientSubtree = nodeToDelete.leftChild;
 			swap(nodeToDelete, rootOfDeficientSubtree);
 			nodeToDelete.leftChild = null;
@@ -366,10 +377,11 @@ public class RedBlackTree {
 				nodeToDelete.parent = null;
 			}
 		}
+		return posInMinHeap;
 	}
 
 	private void fixDelete(Node node) {
-		System.out.println("fixing");
+//		System.out.println("fixing");
 		int i = 0;
 		while (node != root && getColor(node) == Color.BLACK) {
 			debug("iter = " + i++);
@@ -412,7 +424,7 @@ public class RedBlackTree {
 				if (getColor(sibling) == Color.RED) {
 					setColor(sibling, Color.BLACK);
 					setColor(parent(node), Color.RED);
-					RR(parent(node));
+					LL(parent(node));
 					// update sibling of the node
 					sibling = leftChild(parent(node));
 				}
@@ -424,7 +436,7 @@ public class RedBlackTree {
 					node = parent(node);
 				} else {
 					// case 3
-					if (getColor(rightChild(sibling)) == Color.BLACK) {
+					if (getColor(leftChild(sibling)) == Color.BLACK) {
 						setColor(rightChild(sibling), Color.BLACK);
 						setColor(sibling, Color.RED);
 						RR(sibling);
@@ -447,9 +459,9 @@ public class RedBlackTree {
 		}
 	}
 
-	private Node min(Node node) {
-		while (node.leftChild != null) {
-			node = node.leftChild;
+	private Node max(Node node) {
+		while (node.rightChild != null) {
+			node = node.rightChild;
 		}
 		return node;
 	}
@@ -465,6 +477,41 @@ public class RedBlackTree {
 		if (child != null) {
 			child.parent = parent.parent;
 		}
+	}
+
+	public Node search(int rideNumber) {
+		if (root == null || root.key == rideNumber) {
+			return root;
+		}
+		Node node = root;
+		while (node != null) {
+			if (rideNumber > node.key) {
+				node = node.rightChild;
+			} else if (rideNumber < node.key) {
+				node = node.leftChild;
+			} else {
+				return node;
+			}
+		}
+		return null;
+	}
+
+	public List<Ride> range(int min, int max) {
+		List<Ride> rides = new ArrayList<>();
+		search(min, max, root, rides);
+		return rides;
+	}
+
+	void search(int min, int max, Node node, List<Ride> rides) {
+		if (node == null) {
+			return;
+		}
+		search(min, max, node.leftChild, rides);
+		if (min <= node.key && node.key <= max) {
+			rides.add(node.ride);
+		}
+		search(min, max, node.rightChild, rides);
+
 	}
 
 	void debug(String msg) {
