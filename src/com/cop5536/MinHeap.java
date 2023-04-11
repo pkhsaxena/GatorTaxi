@@ -162,30 +162,30 @@ public class MinHeap {
 		System.out.println();
 	}
 
-	public static void main(String[] args) throws Exception {
-		MinHeap minHeap = new MinHeap();
-		minHeap.insert(new Ride(1, 10, 30));
-		minHeap.insert(new Ride(2, 20, 20));
-		minHeap.insert(new Ride(3, 10, 20));
-		minHeap.insert(new Ride(4, 15, 25));
-		minHeap.insert(new Ride(5, 5, 40));
-
-		minHeap.printHeap();
-
-		minHeap.deleteRideByIndex(1);
-		minHeap.printHeap();
-
-//		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 5
+//	public static void main(String[] args) throws Exception {
+//		MinHeap minHeap = new MinHeap();
+//		minHeap.insert(new Ride(1, 10, 30));
+//		minHeap.insert(new Ride(2, 20, 20));
+//		minHeap.insert(new Ride(3, 10, 20));
+//		minHeap.insert(new Ride(4, 15, 25));
+//		minHeap.insert(new Ride(5, 5, 40));
+//
 //		minHeap.printHeap();
-//		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 1
+//
+//		minHeap.deleteRideByIndex(1);
 //		minHeap.printHeap();
-//		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 3
-//		minHeap.printHeap();
-//		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 2
-//		minHeap.printHeap();
-//		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 4
-//		minHeap.printHeap();
-
-	}
+//
+////		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 5
+////		minHeap.printHeap();
+////		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 1
+////		minHeap.printHeap();
+////		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 3
+////		minHeap.printHeap();
+////		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 2
+////		minHeap.printHeap();
+////		System.out.println(minHeap.extractMin().rideNumber); // Expected output: 4
+////		minHeap.printHeap();
+//
+//	}
 
 }

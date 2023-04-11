@@ -7,7 +7,6 @@ import static com.cop5536.Node.rightChild;
 import static com.cop5536.Node.setColor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.cop5536.Node.Color;
@@ -17,18 +16,18 @@ public class RedBlackTree {
 	Node root;
 	boolean debug = false;
 
-	public static void main(String[] args) throws Exception {
-		RedBlackTree rbt = new RedBlackTree();
-		Arrays.asList(50, 40, 60, 30, 45, 70, 65, 80, 75, 85).forEach(no -> {
-			try {
-				rbt.insert(new Ride(no));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
-		rbt.delete(50);
-		rbt.prettyPrint();
-	}
+//	public static void main(String[] args) throws Exception {
+//		RedBlackTree rbt = new RedBlackTree();
+//		Arrays.asList(50, 40, 60, 30, 45, 70, 65, 80, 75, 85).forEach(no -> {
+//			try {
+//				rbt.insert(new Ride(no));
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		});
+//		rbt.delete(50);
+//		rbt.prettyPrint();
+//	}
 
 	public void prettyPrint() {
 		printHelper(this.root, "", true);
@@ -506,17 +505,21 @@ public class RedBlackTree {
 		if (node == null) {
 			return;
 		}
-		search(min, max, node.leftChild, rides);
+		if (node.key > min) {
+			search(min, max, node.leftChild, rides);
+		}
 		if (min <= node.key && node.key <= max) {
 			rides.add(node.ride);
 		}
-		search(min, max, node.rightChild, rides);
+		if (node.key < max) {
+			search(min, max, node.rightChild, rides);
+		}
 
 	}
 
 	void debug(String msg) {
 		if (debug) {
-			System.out.println(msg);
+//			System.out.println(msg);
 		}
 	}
 }
