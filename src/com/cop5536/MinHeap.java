@@ -52,9 +52,9 @@ public class MinHeap {
 	private void fixHeap(int i) {
 		int minIndex = i;
 		// left child index
-		int lci = lc(i);
+		int lci = 2 * i + 1;
 		// right child index
-		int rci = rc(i);
+		int rci = 2 * i + 2;
 
 		// check left child
 		if (lci < minHeap.size() && ((minHeap.get(lci).rideCost < minHeap.get(minIndex).rideCost)
@@ -112,15 +112,6 @@ public class MinHeap {
 
 	private int parent(int i) {
 		return (i - 1) / 2;
-	}
-
-	// change to return Ride instead of index of the child
-	private int lc(int i) {
-		return 2 * i + 1;
-	}
-
-	private int rc(int i) {
-		return 2 * i + 2;
 	}
 
 	public Ride getRoot() {

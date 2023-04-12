@@ -65,26 +65,10 @@ public class GatorTaxi {
 					} else if ("CancelRide".equalsIgnoreCase(functionName) && argsAsInts.length == 1) {
 						taxi.cancelRide(argsAsInts[0]);
 					}
-//					System.out.println(functionName + " ");
-//					for (int i = 0; i < argsAsInts.length; i++) {
-//						System.out.print(argsAsInts[i] + " ");
-//					}
-//					System.out.println();
-//					taxi.minHeap.printHeap();
-//					taxi.rbt.prettyPrint();
-//					System.out.println();
 				}
 				if ("GetNextRide".equalsIgnoreCase(functionName)) {
 					taxi.getNextRide();
-//					System.out.println(functionName + " ");
-//					System.out.println();
-//					taxi.minHeap.printHeap();
-//					taxi.rbt.prettyPrint();
-//					System.out.println();
-//					 System.out.print(functionName);
 				}
-				// Do something with functionName and argsAsInts
-//				System.out.println();
 			}
 		} catch (IOException e) {
 			taxi.writer.close();
@@ -96,37 +80,32 @@ public class GatorTaxi {
 		Ride ride = new Ride(rideNumber, rideCost, tripDuration);
 		boolean inserted = rbt.insert(ride);
 		if (!inserted) {
-//			System.out.println("INSERT: Duplicate RideNumber");
 			writer.write("Duplicate RideNumber\n");
 			writer.close();
 			Runtime.getRuntime().halt(-100);
 		} else {
 			minHeap.insert(ride);
-//			System.out.println("INSERT: " + rideNumber);
 		}
 	}
 
 	void getNextRide() throws Exception {
+		// if minHeap is empty, there are no rides
 		if (minHeap.minHeap.isEmpty()) {
-//			System.out.println("NEXT RIDE: No active ride requests");
 			writer.write("No active ride requests\n");
 			return;
 		}
 		Ride ride = minHeap.extractMin();
-		try {
-			rbt.delete(ride.rideNumber);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		rbt.delete(ride.rideNumber);
 		int rideno = ride.rideNumber;
 		int cost = ride.rideCost;
 		int trip = ride.tripDuration;
-//		System.out.println("NEXT RIDE: (" + rideno + "," + cost + "," + trip + ")");
 		writer.write("(" + rideno + "," + cost + "," + trip + ")\n");
 	}
 
 	void cancelRide(int rideNumber) throws Exception {
+		// find the ride from Red-Black tree
 		int pos = rbt.delete(rideNumber);
+		// if such a ride exists, delete it from the minHeap
 		if (pos != Integer.MIN_VALUE) {
 			minHeap.deleteRideByIndex(pos);
 		}
@@ -138,32 +117,37 @@ public class GatorTaxi {
 			return;
 		}
 		Ride ride = node.ride;
+		// cancel and request a new ride
 		if (newTripDuration <= ride.tripDuration) {
 			cancelRide(rideNumber);
 			insert(ride.rideNumber, ride.rideCost, newTripDuration);
-		} else if (ride.tripDuration < newTripDuration && newTripDuration <= 2 * ride.tripDuration) {
+		}
+		// cancel and request a new ride
+		else if (ride.tripDuration < newTripDuration && newTripDuration <= 2 * ride.tripDuration) {
 			cancelRide(rideNumber);
 			insert(ride.rideNumber, ride.rideCost + 10, newTripDuration);
-		} else if (newTripDuration > 2 * ride.tripDuration) {
+		}
+		// just cancel the ride
+		else if (newTripDuration > 2 * ride.tripDuration) {
 			cancelRide(rideNumber);
 		}
 	}
 
 	void print(int rideNumber) throws IOException {
+		// search for the ride, if the node returned is null, print 0,0,0
 		Node node = rbt.search(rideNumber);
 		if (node == null) {
-//			System.out.println("PRINT: (0,0,0)");
 			writer.write("(0,0,0)\n");
 		} else {
 			int rideno = node.ride.rideNumber;
 			int cost = node.ride.rideCost;
 			int trip = node.ride.tripDuration;
-//			System.out.println("PRINT: (" + rideno + "," + cost + "," + trip + ")");
 			writer.write("(" + rideno + "," + cost + "," + trip + ")\n");
 		}
 	}
 
 	void print(int min, int max) throws IOException {
+		// search for the nodes within this range, is the list is empty, print 0,0,0
 		List<Ride> rides = rbt.range(min, max);
 		if (rides.isEmpty()) {
 			rides.add(new Ride(0, 0, 0));
@@ -177,9 +161,6 @@ public class GatorTaxi {
 		}
 		String string = sb.toString();
 		writer.write(string.substring(0, string.length() - 1) + "\n");
-//		System.out.println(string.substring(0, string.length() - 2));
-//		writer.write("print 2 args\n");
-//		System.out.println("print 2 args");
 	}
 
 }
